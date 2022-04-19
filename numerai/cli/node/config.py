@@ -30,17 +30,8 @@ from numerai.cli.util.keys import \
 @click.option(
     '--example', '-e', type=click.Choice(EXAMPLES),
     help=f'Specify an example to use for this node. Options are {EXAMPLES}.')
-@click.option(
-    '--cron', '-c', type=str,
-    help=f'A cron expression to trigger this node on a schedule '
-         f'(e.g. "30 18 ? * 7 *" to execute at 18:30 UTC every Saturday). '
-         f'This prevents your webhook from auto-registering. '
-         f'Check the AWS docs for more info about cron expressions: '
-         f'https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html')
-@click.option(
-    '--register-webhook', '-r', is_flag=True,
-    help=f'Forces your webhook to register with Numerai. '
-         f'Use in conjunction with options that prevent webhook auto-registering.')
+@click.option('--cron', '-c', type=str, help='A cron expression to trigger this node on a schedule ')
+@click.option('--register-webhook', '-r', is_flag=True, help='Forces your webhook to register with Numerai. ')
 @click.pass_context
 def config(ctx, verbose, provider, size, path, example, cron, register_webhook):
     """
@@ -87,15 +78,19 @@ def config(ctx, verbose, provider, size, path, example, cron, register_webhook):
 
     # terraform apply
     provider_keys = get_provider_keys(node)
-    click.secho(f'running terraform to provision cloud infrastructure...')
-    terraform(f'apply -auto-approve', verbose,
-              env_vars=provider_keys,
-              inputs={'node_config_file': 'nodes.json'})
+    click.secho('running terraform to provision cloud infrastructure...')
+    terraform(
+        'apply -auto-approve',
+        verbose,
+        env_vars=provider_keys,
+        inputs={'node_config_file': 'nodes.json'},
+    )
+
     click.secho('cloud resources created successfully', fg='green')
 
     # terraform output for AWS nodes
     click.echo(f'saving node configuration to {NODES_PATH}...')
-    res = terraform(f"output -json aws_nodes", verbose).decode('utf-8')
+    res = terraform("output -json aws_nodes", verbose).decode('utf-8')
     try:
         aws_nodes = json.loads(res)
     except json.JSONDecodeError:

@@ -25,7 +25,7 @@ def doctor():
     env_setup_cmd = None
     env_setup_status = -1
     env_setup_err = ''
-    if sys.platform == "linux" or sys.platform == "linux2":
+    if sys.platform in ["linux", "linux2"]:
         env_setup_cmd = 'sudo apt update && sudo apt install -y libcurl4 curl && ' \
                         'sudo curl https://raw.githubusercontent.com/numerai/numerai-cli/master/scripts/setup-ubu.sh ' \
                         '| sudo bash'
@@ -58,7 +58,7 @@ def doctor():
         env_setup_err = res.stderr
 
     # Check official (non-dev) version
-    click.secho(f"Checking your numerai-cli version...")
+    click.secho("Checking your numerai-cli version...")
     res = str(subprocess.run(
         'pip3 show numerai-cli',
         stdout=subprocess.PIPE,
@@ -66,7 +66,7 @@ def doctor():
         shell=True
     ))
     curr_ver = [s for s in res.split('\\n') if 'Version:' in s][0].split(': ')[1]
-    url = f"https://pypi.org/pypi/numerai-cli/json"
+    url = "https://pypi.org/pypi/numerai-cli/json"
     versions = list(reversed(sorted(filter(
         lambda key: 'dev' not in key,
         json.load(request.urlopen(url))["releases"].keys()
@@ -89,16 +89,18 @@ def doctor():
             invalid_providers.append('aws')
 
     if env_setup_status != 0:
-        click.secho(f"Environment setup incomplete:", fg='red')
+        click.secho("Environment setup incomplete:", fg='red')
         click.secho(env_setup_err, fg='red')
-        click.secho(f"Ensure your OS is supported and read the Troubleshooting wiki: "
-                    f"https://github.com/numerai/numerai-cli/wiki/Troubleshooting", fg='red')
+        click.secho(
+            "Ensure your OS is supported and read the Troubleshooting wiki: ",
+            fg='red',
+        )
+
     else:
         click.secho("Environment setup with Docker and Python", fg='green')
 
     if curr_ver < versions[0]:
-        click.secho(f"numerai-cli needs an upgrade"
-                    f"(run `pip3 install -U numerai-cli` to fix)", fg='red')
+        click.secho("numerai-cli needs an upgrade", fg='red')
     else:
         click.secho("numerai-cli is up to date", fg='green')
 

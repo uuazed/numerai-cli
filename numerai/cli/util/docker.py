@@ -24,11 +24,10 @@ def check_for_dockerfile(path):
         exit(1)
     if Path.home() == dockerfile_path:
         click.secho(
-            f"DO NOT PUT THE DOCKERFILE IN YOUR HOME PATH, please ensure this node "
-            f"was created from an example or follows the Prediction Node Architecture. "
-            f"Learn More:\nhttps://github.com/numerai/numerai-cli/wiki/Prediction-Nodes",
-            fg='red'
+            "DO NOT PUT THE DOCKERFILE IN YOUR HOME PATH, please ensure this node ",
+            fg='red',
         )
+
         exit(1)
 
 
@@ -50,7 +49,7 @@ def get_from_q(q, verbose, default=b'', prefix=''):
 
 def execute(command, verbose, censor_substr=None):
     if verbose:
-        click.echo('Running: ' + sanitize_message(command, censor_substr))
+        click.echo(f'Running: {sanitize_message(command, censor_substr)}')
 
     on_posix = 'posix' in sys.builtin_module_names
     proc = subprocess.Popen(
@@ -99,7 +98,7 @@ def format_if_docker_toolbox(path, verbose):
     '''
     if 'DOCKER_TOOLBOX_INSTALL_PATH' in os.environ and 'MSYSTEM' in os.environ:
         # '//' found working on win8.1 docker quickstart terminal, previously just '/'
-        new_path = ('//' + path[0].lower() + path[2:]).replace('\\', '/')
+        new_path = f'//{path[0].lower()}{path[2:]}'.replace('\\', '/')
         if verbose:
             click.secho(f"formatted path for docker toolbox: {path} -> {new_path}")
         return new_path
@@ -107,7 +106,7 @@ def format_if_docker_toolbox(path, verbose):
 
 
 def build_tf_cmd(tf_cmd, env_vars, inputs, version, verbose):
-    cmd = f"docker run"
+    cmd = "docker run"
     if env_vars:
         cmd += ' '.join([f' -e "{key}={val}"' for key, val in env_vars.items()])
     cmd += f' --rm -it -v {format_if_docker_toolbox(CONFIG_PATH, verbose)}:/opt/plan'
@@ -142,9 +141,10 @@ def build(node_config, verbose):
     if verbose:
         click.secho(f'Using relative path to node: {path}')
 
-    build_arg_str = ''
-    for arg in numerai_keys:
-        build_arg_str += f' --build-arg {arg}={numerai_keys[arg]}'
+    build_arg_str = ''.join(
+        f' --build-arg {arg}={numerai_keys[arg]}' for arg in numerai_keys
+    )
+
     build_arg_str += f' --build-arg MODEL_ID={node_config["model_id"]}'
     build_arg_str += f' --build-arg SRC_PATH={path}'
 
@@ -211,7 +211,10 @@ def cleanup(node_config):
         raise ValueError(f"Unsupported provider: '{provider}'")
 
     if len(imageIds) > 0:
-        click.secho(f"Deleted {str(len(imageIds))} old image(s) from remote docker repo", fg='yellow')
+        click.secho(
+            f"Deleted {len(imageIds)} old image(s) from remote docker repo",
+            fg='yellow',
+        )
 
 
 def cleanup_aws(docker_repo):

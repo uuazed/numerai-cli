@@ -73,8 +73,7 @@ def relative_strength_index(prices, interval=10):
 
     # calculate relative strength and it's index
     rs = avg_gain / avg_loss
-    rsi = 100.0 - (100.0 / (1.0 + rs))
-    return rsi
+    return 100.0 - (100.0 / (1.0 + rs))
 
 
 def get_rsi_feature_names(num_days):

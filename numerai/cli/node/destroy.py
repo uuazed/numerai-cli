@@ -25,7 +25,7 @@ def destroy(ctx, verbose):
     model = ctx.obj['model']
     node = model['name']
     if not os.path.exists(CONFIG_PATH):
-        click.secho(f".numerai directory not setup, run `numerai setup`...", fg='red')
+        click.secho(".numerai directory not setup, run `numerai setup`...", fg='red')
         return
 
     try:
@@ -38,14 +38,18 @@ def destroy(ctx, verbose):
         return
 
     try:
-        click.secho(f"deleting node configuration...")
+        click.secho("deleting node configuration...")
         del nodes_config[node]
         store_config(NODES_PATH, nodes_config)
 
-        click.secho(f"deleting cloud resources for node...")
-        terraform(f'apply -auto-approve', verbose,
-                  env_vars=provider_keys,
-                  inputs={'node_config_file': 'nodes.json'})
+        click.secho("deleting cloud resources for node...")
+        terraform(
+            'apply -auto-approve',
+            verbose,
+            env_vars=provider_keys,
+            inputs={'node_config_file': 'nodes.json'},
+        )
+
 
     except Exception as e:
         click.secho(e.__str__(), fg='red')

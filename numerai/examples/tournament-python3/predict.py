@@ -41,7 +41,7 @@ def train(train_data_path, model_id, model, force_training=False):
         model = joblib.load(model_name)
         return model
 
-    logging.info(f'reading training data')
+    logging.info('reading training data')
     train_data = pd.read_csv(train_data_path)
 
     logging.info('extracting features and targets')
@@ -49,7 +49,7 @@ def train(train_data_path, model_id, model, force_training=False):
     train_targets = train_data.iloc[:, -1]      # get all rows and only last column
     del train_data
 
-    logging.info(f'training model')
+    logging.info('training model')
     model.fit(X=train_features, y=train_targets)
 
     logging.info('saving model')
@@ -59,7 +59,7 @@ def train(train_data_path, model_id, model, force_training=False):
 
 
 def predict(model, predict_data_path):
-    logging.info(f'reading prediction data')
+    logging.info('reading prediction data')
     predict_data = pd.read_csv(predict_data_path)
 
     logging.info('extracting features')
@@ -67,7 +67,7 @@ def predict(model, predict_data_path):
     predict_features = predict_data.iloc[:, 3:-1]   # get all rows and all columns from 4th to last-1
     del predict_data
 
-    logging.info(f'generating predictions')
+    logging.info('generating predictions')
     predictions = model.predict(predict_features)
     predictions = pd.DataFrame(predictions, columns=['prediction'])
     predictions.insert(0, "id", predict_ids)
@@ -82,7 +82,7 @@ def submit(predictions, predict_output_path, model_id=None):
 
     # Numerai API uses Environment variables to find your keys: NUMERAI_PUBLIC_ID and NUMERAI_SECRET_KEY
     # these are set by docker via the numerai cli; see README for more info
-    logging.info(f'submitting')
+    logging.info('submitting')
     napi.upload_predictions(predict_output_path, model_id=model_id)
 
 

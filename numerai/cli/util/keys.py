@@ -22,7 +22,7 @@ def reformat_keys():
     try:
         config = ConfigParser()
         config.read(KEYS_PATH)
-        click.secho(f"Old keyfile format found, reformatting...", fg='yellow')
+        click.secho("Old keyfile format found, reformatting...", fg='yellow')
 
         new_config = {
             'aws': {
@@ -40,7 +40,6 @@ def reformat_keys():
             config.write(f)
             json.dump(new_config, f, indent=2)
 
-    # if this file is already a json file skip
     except MissingSectionHeaderError:
         pass
 
@@ -131,16 +130,12 @@ def check_aws_validity(key_id, secret):
     except Exception as e:
         if 'NotSignedUp' in str(e):
             raise exception_with_msg(
-                f"Your AWS keys are valid, but the account is not finished signing up. "
-                f"You either need to update your credit card in AWS at "
-                f"https://portal.aws.amazon.com/billing/signup?type=resubscribe#/resubscribed, "
-                f"or wait up to 24 hours for their verification process to complete."
+                "Your AWS keys are valid, but the account is not finished signing up. "
             )
 
+
         raise exception_with_msg(
-            f"AWS keys seem to be invalid. Make sure you've entered them correctly "
-            f"and that your user has the necessary permissions (for help, see "
-            f"https://github.com/numerai/numerai-cli/wiki/Amazon-Web-Services)."
+            "AWS keys seem to be invalid. Make sure you've entered them correctly "
         )
 
 

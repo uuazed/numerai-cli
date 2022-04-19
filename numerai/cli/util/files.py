@@ -55,9 +55,12 @@ def copy_files(src, dst, force=False, verbose=True):
     for filename in os.listdir(src):
         src_file = os.path.join(src, filename)
         dst_file = os.path.join(dst, filename)
-        if os.path.exists(dst_file) and not force:
-            if not click.confirm(f'{filename} already exists. Overwrite?'):
-                return
+        if (
+            os.path.exists(dst_file)
+            and not force
+            and not click.confirm(f'{filename} already exists. Overwrite?')
+        ):
+            return
         if os.path.isdir(src_file):
             if verbose:
                 click.secho(f"copying directory {dst_file}", fg='yellow')

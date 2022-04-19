@@ -15,13 +15,8 @@ from numerai.cli.util.keys import get_aws_keys, get_numerai_keys
 
 
 @click.command()
-@click.option(
-    '--local', '-l', type=str, is_flag=True,
-    help=f'Test the container locally, uses value specified with --command. ')
-@click.option(
-    '--command', '-c', type=str, default="",
-    help=f'Used to override the terminal command during local testing. '
-         f'Defaults to the command specified in the Dockerfile.')
+@click.option('--local', '-l', type=str, is_flag=True, help='Test the container locally, uses value specified with --command. ')
+@click.option('--command', '-c', type=str, default="", help='Used to override the terminal command during local testing. ')
 @click.option('--verbose', '-v', is_flag=True)
 @click.pass_context
 def test(ctx, local, command, verbose):
@@ -69,10 +64,10 @@ def test(ctx, local, command, verbose):
 
         if verbose:
             click.echo(f"response:\n{res}")
-        click.secho(f"Webhook reachable...", fg='green')
+        click.secho("Webhook reachable...", fg='green')
 
     except ValueError as e:
-        click.secho(f'there was a problem calling your webhook...', fg='red')
+        click.secho('there was a problem calling your webhook...', fg='red')
         if 'Internal Server Error' in str(e):
             click.secho('attempting to dump webhook logs', fg='red')
             monitor(node, node_config, True, 20, LOG_TYPE_WEBHOOK, False)
@@ -186,14 +181,14 @@ def monitor_aws(node, config, num_lines, log_type, follow_tail, verbose):
             msg = f"Task status: {task['lastStatus']}."
 
             if task['lastStatus'] == "STOPPED":
-                if len(streams) == 0:
+                if not streams:
                     click.secho(f"{msg} No log file, did you deploy?", fg='yellow')
                     exit(1)
                 else:
                     click.secho(f"{msg} Checking for log events...", fg='green')
                     break
 
-            elif len(streams) == 0:
+            elif not streams:
                 click.secho(
                     f"{msg} Waiting for log file to be created..."
                     f"{'.' * i}\r", fg='yellow', nl=False
@@ -261,7 +256,7 @@ def get_recent_task_status_aws(ecs_client, node, verbose):
             family=node)
 
     if len(tasks["taskArns"]) == 0:
-        click.secho(f"No recent tasks found...", fg='red')
+        click.secho("No recent tasks found...", fg='red')
         return None
 
     tasks = ecs_client.describe_tasks(

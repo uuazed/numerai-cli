@@ -11,15 +11,11 @@ def exception_with_msg(msg):
 
 
 def is_win8():
-    if sys.platform == 'win32':
-        return '8' in platform.win32_ver()[0]
-    return False
+    return '8' in platform.win32_ver()[0] if sys.platform == 'win32' else False
 
 
 def is_win10():
-    if sys.platform == 'win32':
-        return '10' in platform.win32_ver()[0]
-    return False
+    return '10' in platform.win32_ver()[0] if sys.platform == 'win32' else False
 
 
 def is_win10_professional():
@@ -37,68 +33,54 @@ def is_win10_professional():
 # especially on windows :(
 def root_cause(std_out, err_msg):
     all = f'{std_out.decode("utf-8") }\n{err_msg.decode("utf-8") }'
-    if b'is not recognized as an internal or external command' in err_msg:
-        if sys.platform == 'win32':
-            if is_win10_professional():
-                raise exception_with_msg(
-                    f"Docker does not appear to be installed. Make sure to download/install docker from "
-                    f"https://hub.docker.com/editions/community/docker-ce-desktop-windows \n"
-                    f"If you're sure docker is already installed,  then for some reason it isn't in your PATH like expected. "
-                    f"Restarting may fix it.")
+    if (
+        b'is not recognized as an internal or external command' in err_msg
+        and sys.platform == 'win32'
+        and (is_win10_professional() or not is_win10_professional())
+    ):
+        raise exception_with_msg(
+            "Docker does not appear to be installed. Make sure to download/install docker from "
+        )
 
-            else:
-                raise exception_with_msg(
-                    f"Docker does not appear to be installed. Make sure to download/install docker from "
-                    f"https://github.com/docker/toolbox/releases and run 'Docker Quickstart Terminal' when you're done."
-                    f"\nIf you're sure docker is already installed, then for some reason it isn't in your PATH like expected. "
-                    f"Restarting may fix it.")
 
     if b'command not found' in err_msg:
         if sys.platform == 'darwin':
             raise exception_with_msg(
-                f"Docker does not appear to be installed. You can install it with `brew cask install docker` or "
-                f"from https://hub.docker.com/editions/community/docker-ce-desktop-mac")
+                "Docker does not appear to be installed. You can install it with `brew cask install docker` or "
+            )
+
 
         else:
-            raise exception_with_msg(
-                f"docker command not found. Please install docker "
-                f"and make sure that the `docker` command is in your $PATH")
+            raise exception_with_msg("docker command not found. Please install docker ")
 
     if b'This error may also indicate that the docker daemon is not running' in err_msg or b'Is the docker daemon running' in err_msg:
-        if sys.platform == 'darwin':
+        if (
+            sys.platform == 'darwin'
+            or sys.platform != 'linux2'
+            and sys.platform == 'win32'
+        ):
             raise exception_with_msg(
-                f"Docker daemon not running. Make sure you've started "
-                f"'Docker Desktop' and then run this command again.")
+                "Docker daemon not running. Make sure you've started "
+            )
+
 
         elif sys.platform == 'linux2':
             raise exception_with_msg(
-                f"Docker daemon not running or this user cannot acccess the docker socket. "
-                f"Make sure docker is running and that your user has permissions to run docker. "
-                f"On most systems, you can add your user to the docker group like so: "
-                f"`sudo groupadd docker; sudo usermod -aG docker $USER` and then restarting your computer.")
+                "Docker daemon not running or this user cannot acccess the docker socket. "
+            )
 
-        elif sys.platform == 'win32':
-            if 'DOCKER_TOOLBOX_INSTALL_PATH' in os.environ:
-                raise exception_with_msg(
-                    f"Docker daemon not running. Make sure you've started "
-                    f"'Docker Quickstart Terminal' and then run this command again.")
 
-            else:
-                raise exception_with_msg(
-                    f"Docker daemon not running. Make sure you've started "
-                    f"'Docker Desktop' and then run this command again.")
+    if b'invalid mode: /opt/plan' in err_msg and sys.platform == 'win32':
+        raise exception_with_msg(
+            "You're running Docker Toolbox, but you're not using the 'Docker Quickstart Terminal'. "
+        )
 
-    if b'invalid mode: /opt/plan' in err_msg:
-        if sys.platform == 'win32':
-            raise exception_with_msg(
-                f"You're running Docker Toolbox, but you're not using the 'Docker Quickstart Terminal'. "
-                f"Please re-run `numerai setup` from that terminal.")
 
     if b'Drive has not been shared' in err_msg:
         raise exception_with_msg(
-            f"You're running from a directory that isn't shared to your docker Daemon. "
-            f"Make sure your directory is shared through Docker Desktop: "
-            f"https://docs.docker.com/docker-for-windows/#shared-drives")
+            "You're running from a directory that isn't shared to your docker Daemon. "
+        )
+
 
     if b'No configuration files' in err_msg:
         raise exception_with_msg(

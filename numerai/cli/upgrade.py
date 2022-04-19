@@ -35,8 +35,7 @@ def upgrade(verbose):
         )
         return
 
-    click.secho(f"Upgrading, do not interrupt or else "
-                f"your environment may be corrupted.", fg='yellow')
+    click.secho("Upgrading, do not interrupt or else ", fg='yellow')
 
     # MOVE KEYS FILE
     if os.path.isfile(old_key_path):

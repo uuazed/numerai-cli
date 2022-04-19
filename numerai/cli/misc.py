@@ -12,11 +12,7 @@ from numerai.cli.util import files
     help=f'Specify the example to copy, defaults to {DEFAULT_EXAMPLE}. '
          f'Options are {EXAMPLES}.'
 )
-@click.option(
-    '--dest', '-d', type=str,
-    help=f'Destination folder to which example code is written. '
-         f'Defaults to the name of the example.'
-)
+@click.option('--dest', '-d', type=str, help='Destination folder to which example code is written. ')
 @click.option('--verbose', '-v', is_flag=True)
 def copy_example(example, dest, verbose):
     """

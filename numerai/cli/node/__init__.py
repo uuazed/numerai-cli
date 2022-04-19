@@ -12,15 +12,8 @@ from numerai.cli.util.keys import get_numerai_keys
 
 
 @click.group()
-@click.option(
-    '--model-name', '-m', type=str, prompt=True,
-    help=f"The name of one of your models to configure the Prediction Node for."
-         f"It defaults to the first model returned from your account."
-)
-@click.option(
-    '--signals', '-s', is_flag=True,
-    help=f"Target a signals model with this name. Defaults to false."
-)
+@click.option('--model-name', '-m', type=str, prompt=True, help="The name of one of your models to configure the Prediction Node for.")
+@click.option('--signals', '-s', is_flag=True, help="Target a signals model with this name. Defaults to false.")
 @click.pass_context
 def node(ctx, model_name, signals):
     """
